@@ -7,14 +7,7 @@ class Task:
     status_defaults = ("Pending", "In progress", "Completed", "Canceled")
 
     # Default modifiable variable
-    tags_defaults = ["Work",
-                     "Studies",
-                     "Home",
-                     "Meetings",
-                     "Goals",
-                     "Reading",
-                     "Shopping",
-                     "Bills"]
+    tags_defaults = ["Work", "Studies", "Home", "Meetings", "Goals", "Reading", "Shopping", "Bills"]
 
     def __init__(self,
                  title,#🚧(unir match-case + modificable)🚧
@@ -102,64 +95,25 @@ class TaskManager:
     def validation(value):
         match value:
             case "title":
-                while True:
-                    try:
-                        user_input = input("\nTitle(*): ").strip()
-                        if user_input: return user_input
-                        else: raise EmptyError()
-                    except EmptyError: pass
+                return TaskManager.get_valid_input("\nTitle(*): ")
 
             case "priority":
-                while True:
-                    # Display available options for priority selection
-                    print(f"\nOptions -> {Task.priority_defaults}", end=", ")
-                    try:
-                        # Prompt the user for a priority and validate input
-                        user_input = input("Priority(*): ").strip().lower()
-                        if not user_input: raise EmptyError()
-                        elif user_input not in ["low", "medium", "high", "urgent"]:
-                            raise NotAnOptionError()
-                        else: return user_input.capitalize()
-                    except EmptyError: pass
-                    except NotAnOptionError: pass
+                # Display available options for priority selection
+                print(f"\nOptions -> {Task.priority_defaults}")
+                return TaskManager.get_valid_input("Priority(*): ", valid_options=["low", "medium", "high", "urgent"]).capitalize()
 
             case "status":
-                while True:
-                    # Display available options for status selection
-                    print(f"\nOptions -> {Task.status_defaults}", end=", ")
-                    try:
-                        # Prompt the user for a status and validate input
-                        user_input = input("Status(*): ").strip().lower()
-                        if not user_input: raise EmptyError()
-                        elif user_input not in ["pending", "in progress", "completed", "canceled"]:
-                            raise NotAnOptionError()
-                        else: return user_input.capitalize()
-                    except EmptyError: pass
-                    except NotAnOptionError: pass
-
+                # Display available options for status selection
+                print(f"\nOptions -> {Task.status_defaults}")
+                return TaskManager.get_valid_input("Status(*): ", valid_options=["pending", "in progress", "completed", "canceled"]).capitalize()
+            
             case "description":
                 # Get the task description (optional). If empty, return None.
-                user_input = input("\nDescription (press 'Enter' to skip): ").strip()
-                return user_input if user_input else None
-
+                return TaskManager.get_valid_input("\nDescription (press 'Enter' to skip): ", allow_empty=True)
+            
             case "due_date":
-                while True:
-                    try:
-                        # Prompt user for a due date (can be just a date or date with time)
-                        user_input = input("\nEnter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM), or press 'Enter' to skip: ").strip()
-                        if not user_input:
-                            return None # If input is empty, skip due date
-                        if " " in user_input:
-                            # If input contains a space, assume it includes time (DD-MM-YYYY HH:MM)
-                            due_date = datetime.strptime(user_input, "%d-%m-%Y %H:%M")
-                        else:
-                            # Otherwise, assume it's just a date (DD-MM-YYYY)
-                            due_date = datetime.strptime(user_input, "%d-%m-%Y").date()
-                        # Return date or datetime object based on input 
-                        return due_date
-                    except ValueError:
-                        # Handle invalid date format (e.g., wrong separator, missing digits, invalid date)
-                        print("Invalid format. Use 'DD-MM-YYYY' or 'DD-MM-YYYY HH:MM'.")
+                # Prompt user for a due date (Optional and can be just a date or date with time)
+                return TaskManager.get_valid_input("\nEnter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM), or press 'Enter' to skip: ", is_date=True, allow_empty=True)
 
             case "tags":
                 # Initialize an empty list to store the selected tags
@@ -167,106 +121,71 @@ class TaskManager:
 
                 while True:
                     # Presenting the available options for tag management
-                    print(f"\nOptions -> {Task.tags_defaults}", end=", ")
+                    print(f"\nOptions -> {Task.tags_defaults}")
                     print("1. Choose a default tag")
                     print("2. Modify a default tag")
                     print("3. Create a new tag")
                     print("4. Skip (no tags)")
                    
                     # Ensure the user input is one of the valid options (1-4)
-                    try:
-                        choice = input("\nEnter the number (1-4) for your choice: ").strip()
-                        if not choice:
-                            raise EmptyError()
-                        elif choice not in ["1", "2", "3", "4"]:
-                            raise NotAnOptionError()
-                    except NotAnOptionError: pass
-
+                    choice = TaskManager.get_valid_input("\nEnter the number (1-4) for your choice: ", valid_options=["1", "2", "3", "4"])
+                    
                     # Choice execution
                     match choice:
                         case "1":
-                            while True:
-                                # Ask the user to select one of the default tags
-                                print(f"\nOptions -> {Task.tags_defaults}", end=", ")
-                                try:
-                                    user_input = input("Tag: ").strip().lower()
-                                    # Validate the user input against available default tags
-                                    if not user_input:
-                                        raise EmptyError()
-                                    elif user_input not in [tag.lower() for tag in Task.tags_defaults]:
-                                        raise NotAnOptionError()
-                                    else:
-                                        selected_tags.append(user_input)
-                                        print("Tag uploaded.")
-                                        add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
-                                        if add_more != "yes": return selected_tags
-                                        break
-                                except EmptyError: pass
-                                except NotAnOptionError: pass
-
-                        case "2":
-                            while True:
-                                # Ask the user to select and modify a default tag
-                                print()
-                                print(f"Options -> {Task.tags_defaults}", end=", ")
-                                try:
-                                    user_input = input("Tag: ").strip()
-                                    # Validate input and ensure the selected tag is in the defaults
-                                    if not user_input: raise EmptyError()
-                                    elif user_input.lower() not in [tag.lower() for tag in Task.tags_defaults]:
-                                        raise NotAnOptionError()
-                                    else:
-                                        # Proceed to modify the selected tag
-                                        while True:
-                                            try:
-                                                change = input("What's the new tag version?: ").strip()
-                                                if not change: raise EmptyError()
-                                                else: 
-                                                    print(f"New tag version: '{change}'")
-                                                    confirmation = input("Are you sure you want this to be the new version of the tag? (yes/no): ").strip().lower()
-                                                    if confirmation == "yes":
-                                                        # Find original tag
-                                                        original_tag = next(tag for tag in Task.tags_defaults if tag.lower() == user_input.lower())
-                                                        # Find original tag index
-                                                        index = Task.tags_defaults.index(original_tag)
-                                                        # Modifying original tag
-                                                        Task.tags_defaults[index] = change
-                                                        selected_tags.append(change)
-                                                        print(f"Tag updated: {original_tag} -> {change}")
-                                                        print("Tag uploaded.")
-                                                        break
-                                            except EmptyError: pass
-                                        add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
-                                        if add_more != "yes": return selected_tags
-                                        break         
-                                except EmptyError: pass
-                                except NotAnOptionError: pass
-
-                        case "3":
-                            # Ask the user to create a new tag and add it to the defaults
-                            while True:
-                                try:
-                                    new = input("What's the new tag?: ").strip()
-                                    if not new: raise EmptyError()
-                                    else: 
-                                        print(f"New tag version: '{new}'")
-                                        confirmation = input("Are you sure you want this to be the new tag? (yes/no): ").strip().lower()
-                                        if confirmation == "yes":
-                                            # Add the new tag to the list of default tags
-                                            Task.tags_defaults.append(new)
-                                            selected_tags.append(new)
-                                            print("Tag uploaded.")
-                                            break
-                                except EmptyError: pass
+                            # Ask the user to select one of the default tags
+                            print(f"\nOptions -> {Task.tags_defaults}")
+                            user_input = TaskManager.get_valid_input("Tag: ", valid_options=[tag.lower() for tag in Task.tags_defaults]).capitalize()
+                            # Tag upload
+                            selected_tags.append(user_input)
+                            print("Tag uploaded.")
+                            # Asking for more tags
                             add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
                             if add_more != "yes": return selected_tags
-                            break
-                        
+
+                        case "2":
+                            # Ask the user to select and modify a default tag
+                            print(f"\nOptions -> {Task.tags_defaults}")
+                            # Validate input and ensure the selected tag is in the defaults
+                            user_input = TaskManager.get_valid_input("Tag: ", valid_options=[tag.lower() for tag in Task.tags_defaults])
+                            # Proceed to modify the selected tag
+                            while True:
+                                change = TaskManager.get_valid_input("What's the new tag version?: ")
+                                
+                                print(f"New tag version: '{change}'")
+                                confirmation = input("Are you sure you want this to be the new version of the tag? (yes/no): ").strip().lower()
+                                if confirmation == "yes":
+                                    # Find original tag
+                                    original_tag = next(tag for tag in Task.tags_defaults if tag.lower() == user_input.lower())
+                                    # Find original tag index
+                                    index = Task.tags_defaults.index(original_tag)
+                                    # Modifying original tag
+                                    Task.tags_defaults[index] = change
+                                    selected_tags.append(change)
+                                    print(f"Tag updated: {original_tag} -> {change}")
+                                    print("Tag uploaded.")
+                                    break
+                            add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
+                            if add_more != "yes": return selected_tags       
+
+                        case "3":
+                            # Ask the user to create a new tag and add it to defaults
+                            while True:
+                                new = TaskManager.get_valid_input("What's the new tag?: ")
+                                print(f"New tag version: '{new}'")
+                                confirmation = input("Are you sure you want this to be the new tag? (yes/no): ").strip().lower()
+                                if confirmation == "yes":
+                                    # Add the new tag to the list of default tags
+                                    Task.tags_defaults.append(new)
+                                    selected_tags.append(new)
+                                    print("Tag uploaded.")
+                                    break
+                            add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
+                            if add_more != "yes": return selected_tags
+
                         case "4":
                             # No tags selected, return None
                             return None
-                        
-            case _: pass
 
     @staticmethod
     def task_filter(tasks_list):
@@ -285,31 +204,6 @@ class TaskManager:
             else:
                 print("No match was achieved.")
                 return None
-        
-        # Function to get valid input from the user, handles empty input, invalid options, and date format
-        def get_valid_input(prompt, valid_options=None, is_date=False):
-            while True:
-                try:
-                    user_input = input(prompt).strip().lower()
-                    # Check if the input is empty and raise an error
-                    if not user_input:
-                        raise EmptyError()
-                    # Handle date input and convert to appropriate format
-                    if is_date:
-                        if " " in user_input:
-                            return datetime.strptime(user_input, "%d-%m-%Y %H:%M")
-                        else:
-                            return datetime.strptime(user_input, "%d-%m-%Y").date()
-                    # Validate if the input matches one of the valid options
-                    if valid_options and user_input not in valid_options:
-                        raise NotAnOptionError()
-                    return user_input
-                except EmptyError:
-                    pass
-                except NotAnOptionError:
-                    pass
-                except ValueError:
-                    print("Invalid format. Use 'DD-MM-YYYY' or 'DD-MM-YYYY HH:MM'.")
 
         # Display the filter options to the user
         print(f"\nThese are the possible filter options:")
@@ -317,42 +211,71 @@ class TaskManager:
             print(f"{i}. {option}")
 
         # Ask the user to select a filter option (1-6)
-        choice = get_valid_input("\nEnter the number (1-6) for your choice: ", valid_options=["1", "2", "3", "4", "5", "6"])
+        choice = TaskManager.get_valid_input("\nEnter the number (1-6) for your choice: ", valid_options=["1", "2", "3", "4", "5", "6"])
 
         # Perform the filtering action based on the user's choice
         match choice:
             # Title filter
             case "1":
-                user_input = get_valid_input("\nWhat title would you like to search for? ")
+                user_input = TaskManager.get_valid_input("\nWhat title would you like to search for? ")
                 return match_locator(user_input, "title", filtered_list)
             
             # Priority filter
             case "2":
                 print(f"\nOptions -> {Task.priority_defaults}")
-                user_input = get_valid_input("\nWhat priority would you like to search for? ", valid_options=["low", "medium", "high", "urgent"])
+                user_input = TaskManager.get_valid_input("\nWhat priority would you like to search for? ", valid_options=["low", "medium", "high", "urgent"])
                 return match_locator(user_input, "_priority", filtered_list)
 
             # Status filter
             case "3":
                 print(f"\nOptions -> {Task.status_defaults}")
-                user_input = get_valid_input("\nWhat status would you like to search for? ", valid_options=["pending", "in progress", "completed", "canceled"])
+                user_input = TaskManager.get_valid_input("\nWhat status would you like to search for? ", valid_options=["pending", "in progress", "completed", "canceled"])
                 return match_locator(user_input, "_status", filtered_list)
 
             # Due date filter
             case "4":
-                user_input = get_valid_input("\nEnter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM): ", is_date=True)
+                user_input = TaskManager.get_valid_input("\nEnter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM): ", is_date=True)
                 return match_locator(str(user_input), "due_date", filtered_list)
             
             # Created date filter
             case "5":
-                user_input = get_valid_input("\nEnter created date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM): ", is_date=True)
+                user_input = TaskManager.get_valid_input("\nEnter created date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM): ", is_date=True)
                 return match_locator(str(user_input), "created_at", filtered_list)
             
             # Tags filter
             case "6":
                 print(f"\nOptions -> {Task.tags_defaults}")
-                user_input = get_valid_input("\nWhat tag would you like to search for? ", valid_options=[tag.lower() for tag in Task.tags_defaults])
+                user_input = TaskManager.get_valid_input("\nWhat tag would you like to search for? ", valid_options=[tag.lower() for tag in Task.tags_defaults])
                 return match_locator(user_input, "tags", filtered_list)
+
+    # Function to get valid input from the user, handles empty input, invalid options, and date format
+    @staticmethod
+    def get_valid_input(prompt, valid_options=None, is_date=False, allow_empty=False):
+        while True:
+            try:
+                user_input = input(prompt).strip().lower()
+                # If empty input is allowed and the user provides an empty input, return None
+                if allow_empty and not user_input:
+                    return None
+                # Check if the input is empty and raise an error
+                if not user_input:
+                    raise EmptyError()
+                # Handle date input and convert to appropriate format
+                if is_date:
+                    if " " in user_input:
+                        return datetime.strptime(user_input, "%d-%m-%Y %H:%M")
+                    else:
+                        return datetime.strptime(user_input, "%d-%m-%Y").date()
+                # Validate if the input matches one of the valid options
+                if valid_options and user_input not in valid_options:
+                    raise NotAnOptionError()
+                return user_input
+            except EmptyError:
+                pass
+            except NotAnOptionError:
+                pass
+            except ValueError:
+                print("Invalid format. Use 'DD-MM-YYYY' or 'DD-MM-YYYY HH:MM'.")
 
 class EmptyError(Exception):
     # user entered an empty input, prompt for valid input
