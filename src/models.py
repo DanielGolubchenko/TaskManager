@@ -88,10 +88,11 @@ class TaskManager:
         pass
 
     def find_task(self):
-        pass
+        # 🚧🚧asi pondriamos en accion la funcion task_filter. realizar condicional o funcion extra para validar los diferentes return de la funciion.
+        filtered_list = TaskManager.task_filter(self.tasks_list)
     
     def modify_task(self):
-        pass
+        pass # 🚧🚧terminar los getter y setter privados en class Task
 
     def delete_task(self):
         pass
@@ -102,57 +103,52 @@ class TaskManager:
         match value:
             case "title":
                 while True:
-                    print()
                     try:
-                        user_input = input("Title(*): ").strip()
+                        user_input = input("\nTitle(*): ").strip()
                         if user_input: return user_input
-                        else: raise EmptyError
-                    except EmptyError: print("This slot can't be empty.")
+                        else: raise EmptyError()
+                    except EmptyError: pass
 
             case "priority":
                 while True:
-                    print()
                     # Display available options for priority selection
-                    print(f"Options -> {Task.priority_defaults}", end=", ")
+                    print(f"\nOptions -> {Task.priority_defaults}", end=", ")
                     try:
                         # Prompt the user for a priority and validate input
-                        user_input = input("Priority(*): ").strip()
-                        if not user_input: raise EmptyError
-                        elif user_input.lower() not in ["low", "medium", "high", "urgent"]:
-                            raise NotAnOptionError
+                        user_input = input("Priority(*): ").strip().lower()
+                        if not user_input: raise EmptyError()
+                        elif user_input not in ["low", "medium", "high", "urgent"]:
+                            raise NotAnOptionError()
                         else: return user_input.capitalize()
-                    except EmptyError: print("This slot can't be empty.")
-                    except NotAnOptionError: print("That's not a valid option.")
+                    except EmptyError: pass
+                    except NotAnOptionError: pass
 
             case "status":
                 while True:
-                    print()
                     # Display available options for status selection
-                    print(f"Options -> {Task.status_defaults}", end=", ")
+                    print(f"\nOptions -> {Task.status_defaults}", end=", ")
                     try:
                         # Prompt the user for a status and validate input
-                        user_input = input("Status(*): ").strip()
-                        if not user_input: raise EmptyError
-                        elif user_input.lower() not in ["pending", "in progress", "completed", "canceled"]:
-                            raise NotAnOptionError
+                        user_input = input("Status(*): ").strip().lower()
+                        if not user_input: raise EmptyError()
+                        elif user_input not in ["pending", "in progress", "completed", "canceled"]:
+                            raise NotAnOptionError()
                         else: return user_input.capitalize()
-                    except EmptyError: print("This slot can't be empty.")
-                    except NotAnOptionError: print("That's not a valid option.")
+                    except EmptyError: pass
+                    except NotAnOptionError: pass
 
             case "description":
-                print()
                 # Get the task description (optional). If empty, return None.
-                user_input = input("Description (press 'Enter' to skip): ").strip()
+                user_input = input("\nDescription (press 'Enter' to skip): ").strip()
                 return user_input if user_input else None
 
             case "due_date":
                 while True:
-                    print()
-                    # Prompt user for a due date (can be just a date or date with time)
-                    user_input = input("Enter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM), or press 'Enter' to skip: ").strip()
-                    if not user_input:
-                        return None # If input is empty, skip due date
                     try:
+                        # Prompt user for a due date (can be just a date or date with time)
+                        user_input = input("\nEnter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM), or press 'Enter' to skip: ").strip()
+                        if not user_input:
+                            return None # If input is empty, skip due date
                         if " " in user_input:
                             # If input contains a space, assume it includes time (DD-MM-YYYY HH:MM)
                             due_date = datetime.strptime(user_input, "%d-%m-%Y %H:%M")
@@ -171,8 +167,7 @@ class TaskManager:
 
                 while True:
                     # Presenting the available options for tag management
-                    print()
-                    print(f"Options -> {Task.tags_defaults}", end=", ")
+                    print(f"\nOptions -> {Task.tags_defaults}", end=", ")
                     print("1. Choose a default tag")
                     print("2. Modify a default tag")
                     print("3. Create a new tag")
@@ -181,31 +176,33 @@ class TaskManager:
                     # Ensure the user input is one of the valid options (1-4)
                     try:
                         choice = input("\nEnter the number (1-4) for your choice: ").strip()
-                        if choice not in ["1", "2", "3", "4"]:
-                            raise NotAnOptionError
-                    except NotAnOptionError: print("That's not a valid option.")
+                        if not choice:
+                            raise EmptyError()
+                        elif choice not in ["1", "2", "3", "4"]:
+                            raise NotAnOptionError()
+                    except NotAnOptionError: pass
 
                     # Choice execution
                     match choice:
                         case "1":
-                            # Ask the user to select one of the default tags
                             while True:
-                                print()
-                                print(f"Options -> {Task.tags_defaults}", end=", ")
+                                # Ask the user to select one of the default tags
+                                print(f"\nOptions -> {Task.tags_defaults}", end=", ")
                                 try:
-                                    user_input = input("Tag: ").strip()
+                                    user_input = input("Tag: ").strip().lower()
                                     # Validate the user input against available default tags
-                                    if not user_input:raise EmptyError
-                                    elif user_input.lower() not in [tag.lower() for tag in Task.tags_defaults]:
-                                        raise NotAnOptionError
+                                    if not user_input:
+                                        raise EmptyError()
+                                    elif user_input not in [tag.lower() for tag in Task.tags_defaults]:
+                                        raise NotAnOptionError()
                                     else:
                                         selected_tags.append(user_input)
                                         print("Tag uploaded.")
                                         add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
                                         if add_more != "yes": return selected_tags
                                         break
-                                except EmptyError: print("This slot can't be empty.")
-                                except NotAnOptionError: print("That's not a valid option.")
+                                except EmptyError: pass
+                                except NotAnOptionError: pass
 
                         case "2":
                             while True:
@@ -215,15 +212,15 @@ class TaskManager:
                                 try:
                                     user_input = input("Tag: ").strip()
                                     # Validate input and ensure the selected tag is in the defaults
-                                    if not user_input: raise EmptyError
+                                    if not user_input: raise EmptyError()
                                     elif user_input.lower() not in [tag.lower() for tag in Task.tags_defaults]:
-                                        raise NotAnOptionError
+                                        raise NotAnOptionError()
                                     else:
                                         # Proceed to modify the selected tag
                                         while True:
                                             try:
                                                 change = input("What's the new tag version?: ").strip()
-                                                if not change: raise EmptyError
+                                                if not change: raise EmptyError()
                                                 else: 
                                                     print(f"New tag version: '{change}'")
                                                     confirmation = input("Are you sure you want this to be the new version of the tag? (yes/no): ").strip().lower()
@@ -238,19 +235,19 @@ class TaskManager:
                                                         print(f"Tag updated: {original_tag} -> {change}")
                                                         print("Tag uploaded.")
                                                         break
-                                            except EmptyError: print("This slot can't be empty.")
+                                            except EmptyError: pass
                                         add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
                                         if add_more != "yes": return selected_tags
                                         break         
-                                except EmptyError: print("This slot can't be empty.")
-                                except NotAnOptionError: print("That's not a valid option.")
+                                except EmptyError: pass
+                                except NotAnOptionError: pass
 
                         case "3":
                             # Ask the user to create a new tag and add it to the defaults
                             while True:
                                 try:
                                     new = input("What's the new tag?: ").strip()
-                                    if not new: raise EmptyError
+                                    if not new: raise EmptyError()
                                     else: 
                                         print(f"New tag version: '{new}'")
                                         confirmation = input("Are you sure you want this to be the new tag? (yes/no): ").strip().lower()
@@ -260,7 +257,7 @@ class TaskManager:
                                             selected_tags.append(new)
                                             print("Tag uploaded.")
                                             break
-                                except EmptyError: print("This slot can't be empty.")
+                                except EmptyError: pass
                             add_more = input("\nDo you want to add another tag? (yes/no): ").strip().lower()
                             if add_more != "yes": return selected_tags
                             break
@@ -271,9 +268,106 @@ class TaskManager:
                         
             case _: pass
 
+    @staticmethod
+    def task_filter(tasks_list):
+        # Create a copy of the tasks_list to manipulate without affecting the original list
+        filtered_list = tasks_list[:]
+
+        # Define the available filter options
+        options = ["title", "priority", "status", "due_date", "created_at", "tags"]
+        
+        # Function to filter tasks based on a user's input for a specific attribute
+        def match_locator(user_input, attribute, filtered_list):
+            filtered_list = [task for task in filtered_list if user_input in str(getattr(task, attribute, "")).lower()]
+            if filtered_list:
+                print("Match achieved.")
+                return filtered_list
+            else:
+                print("No match was achieved.")
+                return None
+        
+        # Function to get valid input from the user, handles empty input, invalid options, and date format
+        def get_valid_input(prompt, valid_options=None, is_date=False):
+            while True:
+                try:
+                    user_input = input(prompt).strip().lower()
+                    # Check if the input is empty and raise an error
+                    if not user_input:
+                        raise EmptyError()
+                    # Handle date input and convert to appropriate format
+                    if is_date:
+                        if " " in user_input:
+                            return datetime.strptime(user_input, "%d-%m-%Y %H:%M")
+                        else:
+                            return datetime.strptime(user_input, "%d-%m-%Y").date()
+                    # Validate if the input matches one of the valid options
+                    if valid_options and user_input not in valid_options:
+                        raise NotAnOptionError()
+                    return user_input
+                except EmptyError:
+                    pass
+                except NotAnOptionError:
+                    pass
+                except ValueError:
+                    print("Invalid format. Use 'DD-MM-YYYY' or 'DD-MM-YYYY HH:MM'.")
+
+        # Display the filter options to the user
+        print(f"\nThese are the possible filter options:")
+        for i, option in enumerate(options, start=1):
+            print(f"{i}. {option}")
+
+        # Ask the user to select a filter option (1-6)
+        choice = get_valid_input("\nEnter the number (1-6) for your choice: ", valid_options=["1", "2", "3", "4", "5", "6"])
+
+        # Perform the filtering action based on the user's choice
+        match choice:
+            # Title filter
+            case "1":
+                user_input = get_valid_input("\nWhat title would you like to search for? ")
+                return match_locator(user_input, "title", filtered_list)
+            
+            # Priority filter
+            case "2":
+                print(f"\nOptions -> {Task.priority_defaults}")
+                user_input = get_valid_input("\nWhat priority would you like to search for? ", valid_options=["low", "medium", "high", "urgent"])
+                return match_locator(user_input, "_priority", filtered_list)
+
+            # Status filter
+            case "3":
+                print(f"\nOptions -> {Task.status_defaults}")
+                user_input = get_valid_input("\nWhat status would you like to search for? ", valid_options=["pending", "in progress", "completed", "canceled"])
+                return match_locator(user_input, "_status", filtered_list)
+
+            # Due date filter
+            case "4":
+                user_input = get_valid_input("\nEnter due date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM): ", is_date=True)
+                return match_locator(str(user_input), "due_date", filtered_list)
+            
+            # Created date filter
+            case "5":
+                user_input = get_valid_input("\nEnter created date (DD-MM-YYYY) or (DD-MM-YYYY HH:MM): ", is_date=True)
+                return match_locator(str(user_input), "created_at", filtered_list)
+            
+            # Tags filter
+            case "6":
+                print(f"\nOptions -> {Task.tags_defaults}")
+                user_input = get_valid_input("\nWhat tag would you like to search for? ", valid_options=[tag.lower() for tag in Task.tags_defaults])
+                return match_locator(user_input, "tags", filtered_list)
+
 class EmptyError(Exception):
     # user entered an empty input, prompt for valid input
-    pass
+    def __init__(self, message="This slot can't be empty."):
+        super().__init__(message)
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
 class NotAnOptionError(Exception):
     # user entered an invalid option, prompt for valid input
-    pass
+    def __init__(self, message="That's not a valid option."):
+        super().__init__(message)
+        self.message = message
+
+    def __str__(self):
+        return self.message
