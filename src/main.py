@@ -1,5 +1,5 @@
-import models
-import controllers
+import src.models
+import src.controllers
 
 def main():
     pass
