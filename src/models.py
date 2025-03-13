@@ -1,7 +1,7 @@
 import hashlib
 from datetime import datetime
-from src.controllers import get_valid_input
-from src.controllers import attribute_validation
+from controllers import get_valid_input
+from controllers import attribute_validation
 
 class Task:
     """
@@ -85,7 +85,7 @@ class TaskManager:
         due_date = attribute_validation("due_date")
         tags = attribute_validation("tags")
 
-        task = Task(title, priority, status, description, due_date, tags)
+        task = Task(title, priority, status, description, due_date, tags=tags)
         self.tasks_list.append(task)
         print("Task added succesfully!")
 
@@ -109,31 +109,31 @@ class TaskManager:
         filtered_list = TaskManager.task_filter(self.tasks_list) or []
         
         if not filtered_list:
-            return 
-    
-        for task in filtered_list:
-            print(task)
+            return
+        
+        if len(filtered_list) == 1: # If only one task is found, select it automatically
+            task = filtered_list[0]
+        else:
+            print("\nSelect a task to proceed:")
+            for task in filtered_list:  # Display the filtered list of tasks
+                print(task)
+            
+            task_ids = [task.task_id for task in filtered_list] # Get the task IDs for validation
+            task_id = get_valid_input("Enter the ID of the task: ", valid_options=task_ids) # Ensure the user selects a valid task ID
+            task = next(task for task in filtered_list if task.task_id == task_id)
 
-        action = get_valid_input("Do you want to modify or delete a task? (modify/delete/no): ", valid_options=["modify", "delete", "no"])
+        print(f"\nSelected task:\n{task}")
 
-        if action in ["modify", "delete"]:
-            if len(filtered_list) == 1:
-                task = filtered_list[0]  # Directly select the only task
-                print(f"\nSelected task:\n{task}") 
-            else:
-                print("\nSelect a task to proceed:")
-                for task in filtered_list:
-                    print(task) 
-
-                task_ids = [task.task_id for task in filtered_list]  # Get task IDs
-                task_id = get_valid_input("Enter the ID of the task: ", valid_options=task_ids)
-                task = next(task for task in filtered_list if task.task_id == task_id)  # Find the selected task
-
-            if action == "modify":
-                task.modify_task()
-            else:
-                self.tasks_list.remove(task)
-                print("Task deleted successfully.")
+        action = get_valid_input("Do you want to modify or delete this task? (modify/delete/no): ", valid_options=["modify", "delete", "no"])
+        
+        # Perform the selected action
+        if action == "modify":
+            task.modify_task()
+        elif action == "delete":
+            self.tasks_list = [t for t in self.tasks_list if t.task_id != task.task_id]
+            print("Task deleted successfully.")
+        else:
+            print("No action taken.")
 
     @staticmethod
     def task_filter(tasks_list):
@@ -148,10 +148,9 @@ class TaskManager:
             filtered_list = [task for task in filtered_list if user_input in str(getattr(task, attribute, "")).lower()]
             if filtered_list:
                 print("Match achieved.\n")
-                return filtered_list
             else:
                 print("No match was achieved.\n")
-                return None
+            return []
 
         print(f"\nThese are the possible filter options:")
         for i, option in enumerate(options, start=1):

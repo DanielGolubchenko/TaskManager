@@ -1,11 +1,8 @@
-from src.models import Task
-from src.models import EmptyError
-from src.models import NotAnOptionError
 from datetime import datetime
 
 def attribute_validation(value):
     """Validates each posible task atribute input"""
-
+    from models import Task
     match value:
         case "title":
             return get_valid_input("\nTitle(*): ")
@@ -95,7 +92,8 @@ def attribute_validation(value):
                     
 def get_valid_input(prompt, valid_options=None, is_date=False, allow_empty=False):
     """Function to get valid input from the user, handles empty input, invalid options, and date format"""
-
+    from models import EmptyError
+    from models import NotAnOptionError
     while True:
         try:
             user_input = input(prompt).strip().lower()
