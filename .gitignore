@@ -1,0 +1,17 @@
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Python virtual environment
+venv/
+.env
+
+# Ignore Visual Studio Code
+.vscode/
+
+# ignore database file
+db.sqlite3
+
+# Ignore pytest cache
+pytestcache/
