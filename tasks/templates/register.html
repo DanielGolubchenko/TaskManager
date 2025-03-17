@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Sign In - TaskManager{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/register_style.css' %}">
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        <!-- Username Field -->
+        <div class="form-group">
+            <label for="username"><span style="color: #ff006c;">﹡</span>Username</label>
+            <br>
+            {{ form.username }}
+            <div class="error">
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <!-- Email Field -->
+        <div class="form-group">
+            <label for="email"><span style="color: #ff006c;">﹡</span>Email Address</label>
+            <br>
+            {{ form.email }}
+            <div class="error">
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <!-- Password Field -->
+        <div class="form-group">
+            <label for="password1"><span style="color: #ff006c;">﹡</span>Password</label>
+            <br>
+            {{ form.password1 }}
+            <div class="error">
+                {% if form.password1.errors %}
+                    {% for error in form.password1.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <!-- Confirm Password Field -->
+        <div class="form-group">
+            <label for="password2"><span style="color: #ff006c;">﹡</span>Confirm Password</label>
+            <br>
+            {{ form.password2 }}
+            <div class="error">
+                {% if form.password2.errors %}
+                    {% for error in form.password2.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <br>
+        <button type="submit" style="background-color: #ff006c; color: white;">Register</button>
+    </form>
+    <br>
+    <p>Already have an account? <a href="" style="color: #ff006c;">Login Now</a></p>
+</div>
+{% endblock %}

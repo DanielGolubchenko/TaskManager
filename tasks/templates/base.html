@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}TaskManager{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+</head>
+<body>
+    <header>
+        <div class="header_left">
+            <img src="{% static 'images/favicon.png' %}" alt="Logo" class="logo" >
+            <div class="header_text">
+                <a href="{% url 'home' %}" style="color: white; text-decoration: none;" onmouseover="this.style.color='#ff006c'" onmouseout="this.style.color='white'">TaskManager</a>
+            </div>
+        </div>
+        
+        <nav>
+            <ul class="menu">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="#">Tasks</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>TaskManager &copy; 2025. All rights reserved.</p>
+    </footer>
+</body>
+</html>

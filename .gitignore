@@ -14,4 +14,4 @@ venv/
 db.sqlite3
 
 # Ignore pytest cache
-pytestcache/
+.pytest_cache/
