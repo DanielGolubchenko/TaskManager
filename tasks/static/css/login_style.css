@@ -24,7 +24,7 @@ html, body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 350px;
     width: 90%;
-    min-height: 450px;
+    min-height: 350px;
     margin: 40px auto 0;
     position: relative;
 }
@@ -43,17 +43,30 @@ label {
     margin-bottom: 5px;
 }
 
-input, select, textarea {
+input {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
+    background-color: #333;
+    color: white;
+}
+
+input:focus {
+    border-color: #ff006c;
+    outline: none;
+}
+
+.error {
+    color: #ff006c;
+    font-size: 12px;
+    margin-bottom: 10px;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #ff006c;
     color: white;
     border: none;
     padding: 10px;
@@ -63,14 +76,29 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #e6005a;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #ff006c;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
 }
 
 @media screen and (max-width: 768px) {
     .container {
         padding: 30px;
         width: 80%;
-        min-height: 400px;
+        min-height: 300px;
     }
 }
 
