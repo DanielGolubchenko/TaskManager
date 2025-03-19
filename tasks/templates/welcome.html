@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}TaskManager{% endblock %}
+
+{% block content %}
+    <h1 align="center">WELCOME</h1>
+    <hr>
+    <a href="{% url 'register' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>Register</a>
+    <hr>
+    <a href="{% url 'login' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>Login</a>
+    <hr>
+    <a href="{% url 'demo_login' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>Demo</a>
+    <hr>
+    <a href="{% url 'demo_logout' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>Demo-logout</a>
+    <hr>
+    <a href="{% url 'home' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>HOME</a>
+    <hr>
+    <a href="{% url 'tasks' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>TASKS</a>
+    <hr>
+    <a href="{% url 'profile' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>PROFILE</a>
+    <hr>
+    {% endblock %}

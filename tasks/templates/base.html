@@ -15,13 +15,20 @@
             <div class="header_text">
                 <a href="{% url 'home' %}" style="color: white; text-decoration: none;" onmouseover="this.style.color='#ff006c'" onmouseout="this.style.color='white'">TaskManager</a>
             </div>
+
+        <!-- Demo Timer Display Section -->
         </div>
+        {% if time_remaining_minutes is not none and time_remaining_seconds is not none %}
+        <div class="demo-timer">
+            <p>Demo: {{ time_remaining_minutes }}m {{ time_remaining_seconds }}s</p>
+        </div>
+        {% endif %}
         
         <nav>
             <ul class="menu">
                 <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="#">Tasks</a></li>
-                <li><a href="#">Profile</a></li>
+                <li><a href="{% url 'tasks' %}">Tasks</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
             </ul>
         </nav>
     </header>
