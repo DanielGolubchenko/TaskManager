@@ -1,1 +1,1 @@
-web: gunicorn taskmanager.wsgi:application
+web: gunicorn taskmanager.wsgi:application --bind 0.0.0.0:8000
