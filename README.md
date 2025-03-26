@@ -34,7 +34,7 @@ TaskManager is a web application designed to help users efficiently manage their
 ### Requirements
 
 - Python 3.8 or higher
-- Django 5.x
+- Django 5.1.7
 
 ### Installation Steps
 
