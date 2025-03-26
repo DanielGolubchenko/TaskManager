@@ -25,8 +25,9 @@ SECRET_KEY = 'django-insecure-q4wsvfq-ei+6f=^+(^)1)(hw1^4ivp&cr#e#$_=gk75izivgd@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1', 'golubchenko-taskmanager.up.railway.app' ]
 
+CSRF_TRUSTED_ORIGINS = [ 'https://golubchenko-taskmanager.up.railway.app' ]
 
 # Application definition
 
