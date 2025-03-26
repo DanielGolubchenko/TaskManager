@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.welcome, name='welcome'),
@@ -13,4 +15,4 @@ urlpatterns = [
     path('new/', views.task_create, name='task_create'),
     path('<str:task_id>/edit/', views.task_update, name='task_update'),
     path('<str:task_id>/delete/', views.task_delete, name='task_delete'),
-]   
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
