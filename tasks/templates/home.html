@@ -3,8 +3,56 @@
 {% block title %}Home | TaskManager{% endblock %}
 
 {% block content %}
+<style>
+    footer {
+        display: none;
+    }
+</style>
     <h1 align="center">HOME</h1>
+    <hr>
+    
+    <!-- Completed Tasks -->
+    <h1>Completed Tasks</h1>
+    <ul>
+        {% for task in tasks_completed %}
+            <li>{{ task.title }} - {{ task.status }}</li>
+        {% empty %}
+            <li>No completed tasks.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Canceled Tasks -->
+    <h1>Canceled Tasks</h1>
+    <ul>
+        {% for task in tasks_canceled %}
+            <li>{{ task.title }} - {{ task.status }}</li>
+        {% empty %}
+            <li>No canceled tasks.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- In Progress Tasks -->
+    <h1>In Progress Tasks</h1>
+    <ul>
+        {% for task in tasks_in_progress %}
+            <li>{{ task.title }} - {{ task.status }}</li>
+        {% empty %}
+            <li>No tasks in progress.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Pending Tasks -->
+    <h1>Pending Tasks</h1>
+    <ul>
+        {% for task in tasks_pending %}
+            <li>{{ task.title }} - {{ task.status }}</li>
+        {% empty %}
+            <li>No pending tasks.</li>
+        {% endfor %}
+    </ul>
+
     <hr>
     <a href="{% url 'welcome' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>WELCOME</a>
     <hr>
 {% endblock %}
+

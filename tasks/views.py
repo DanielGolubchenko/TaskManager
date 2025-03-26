@@ -5,24 +5,37 @@ from .forms import CustomUserCreationForm, TaskForm, TagForm
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from datetime import timedelta
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required 
 from .models import Task, Tag
+from django.contrib import messages
 
 def welcome(request):
     return render(request, 'welcome.html')
 
 @login_required
 def home(request):
-    # If the user is in demo mode, we will check if the session has expired
+    # Si el usuario está en modo demo, verificar si la sesión ha expirado
     if request.session.get("is_demo", False):
-        # If the session has expired, clear the session and redirect the user to the welcome page
+        # Si la sesión ha expirado, borrar la sesión y redirigir a la página de bienvenida
         if not request.session.exists(request.session.session_key):
             request.session.flush()
             return redirect("welcome")
         
-        # If the session is still active, render the demo home page
+        # Si la sesión sigue activa, renderizar la página de inicio del demo
         return render(request, "demo_home.html", {"username": request.session["username"]})
-    return render(request, 'home.html') # If the user is not in demo mode, render the home page
+
+    # Filtrar tareas por estado
+    tasks_completed = Task.objects.filter(user=request.user, status='Completed')
+    tasks_canceled = Task.objects.filter(user=request.user, status='Canceled')
+    tasks_in_progress = Task.objects.filter(user=request.user, status='In progress')
+    tasks_pending = Task.objects.filter(user=request.user, status='Pending')
+
+    return render(request, 'home.html', {
+        'tasks_completed': tasks_completed,
+        'tasks_canceled': tasks_canceled,
+        'tasks_in_progress': tasks_in_progress,
+        'tasks_pending': tasks_pending
+    })
 
 @login_required
 def tasks(request):
@@ -31,9 +44,15 @@ def tasks(request):
             request.session.flush()
             return redirect("welcome")
         return render(request, "demo_tasks.html", {"username": request.session["username"]})
-    
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, 'tasks.html', {'tasks': tasks})
+
+    # Filtramos las tareas del usuario actual
+    tasks_incomplete = Task.objects.filter(user=request.user).exclude(status='Completed')
+    tasks_completed = Task.objects.filter(user=request.user, status='Completed')
+
+    return render(request, 'tasks.html', {
+        'tasks_incomplete': tasks_incomplete, 
+        'tasks_completed': tasks_completed
+    })
 
 @login_required
 def profile(request):
@@ -63,8 +82,8 @@ def login_view(request):
         # Create an instance of the AuthenticationForm class with the data from the request
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            username = form.cleaned_data['username']  # Use cleaned_data to access form fields
+            password = form.cleaned_data['password']
             # Authenticate the user using the username and password
             user = authenticate(request, username=username, password=password)
 
@@ -72,8 +91,17 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('home')
+            else:
+                # If authentication fails, add a custom error message
+                messages.error(request, 'Invalid username or password.')
+
+        else:
+            # If the form is invalid, check if the errors are for username or password
+            messages.error(request, 'Invalid username or password.')
+
     else:
         form = AuthenticationForm()
+
     return render(request, 'login.html', {'form': form})
 
 def demo_login(request):
@@ -102,11 +130,6 @@ def demo_logout(request):
         del request.session["user_id"]
         del request.session["username"]
     return redirect("welcome")
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Task, Tag
-from .forms import TaskForm, TagForm
 
 @login_required  # Asegura que solo usuarios autenticados pueden crear tareas
 def task_create(request):

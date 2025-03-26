@@ -5,17 +5,41 @@
 {% block content %}
 <style>
     footer {
-    display: none;
+        display: none;
     }
 </style>
-    <h1 align="center">TASKS</h1>
-    <hr>
-    {% for task in tasks %}
-    <h2>{{ task.title }} ({{ task.status }})</h2>
-    <p>Priority: {{ task.priority }}</p>
-    <p>Description: {{ task.description }}</p>
-    <p>Due date: {{ task.due_date }}</p>
-    <p><a href="{% url 'task_update' task.id %}">Edit</a> | <a href="{% url 'task_delete' task.id %}">Delete</a></p>
-    {% endfor %}
-    <a href="{% url 'task_create' %}">Create New Task</a>
+
+<h1 align="center">TASKS</h1>
+<hr>
+
+<!-- Tareas Incompletas -->
+<h2>Incomplete tasks</h2>
+{% for task in tasks_incomplete %}
+    <div style="margin-bottom: 20px;">
+        <strong>{{ task.title }}</strong> ({{ task.status }})
+        <p>Priority: {{ task.priority }}</p>
+        <p>Description: {{ task.description }}</p>
+        <p>Due date: {{ task.due_date }}</p>
+        <p><a href="{% url 'task_update' task.id %}">Edit</a> | <a href="{% url 'task_delete' task.id %}">Delete</a></p>
+    </div>
+{% empty %}
+    <p>There are no incomplete tasks.</p>
+{% endfor %}
+
+<!-- Tareas Completadas -->
+<h2>Completed tasks</h2>
+{% for task in tasks_completed %}
+    <div style="margin-bottom: 20px;">
+        <strong>{{ task.title }}</strong> ({{ task.status }})
+        <p>Priority: {{ task.priority }}</p>
+        <p>Description: {{ task.description }}</p>
+        <p>Due date: {{ task.due_date }}</p>
+        <p><a href="{% url 'task_update' task.id %}">Edit</a> | <a href="{% url 'task_delete' task.id %}">Delete</a></p>
+    </div>
+{% empty %}
+    <p>There are no completed tasks.</p>
+{% endfor %}
+
+<hr>
+<a href="{% url 'task_create' %}">Create New Task</a>
 {% endblock %}
