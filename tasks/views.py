@@ -10,21 +10,21 @@ from .models import Task, Tag
 from django.contrib import messages
 
 def welcome(request):
+    """Not implemented yet"""
     return render(request, 'welcome.html')
 
 @login_required
 def home(request):
-    # Si el usuario está en modo demo, verificar si la sesión ha expirado
+    # if the user is a demo user, redirect to the demo home page
     if request.session.get("is_demo", False):
-        # Si la sesión ha expirado, borrar la sesión y redirigir a la página de bienvenida
+        # Check if the session has expired
         if not request.session.exists(request.session.session_key):
             request.session.flush()
             return redirect("welcome")
         
-        # Si la sesión sigue activa, renderizar la página de inicio del demo
         return render(request, "demo_home.html", {"username": request.session["username"]})
 
-    # Filtrar tareas por estado
+    # Filter by status
     tasks_completed = Task.objects.filter(user=request.user, status='Completed')
     tasks_canceled = Task.objects.filter(user=request.user, status='Canceled')
     tasks_in_progress = Task.objects.filter(user=request.user, status='In progress')
@@ -45,7 +45,7 @@ def tasks(request):
             return redirect("welcome")
         return render(request, "demo_tasks.html", {"username": request.session["username"]})
 
-    # Filtramos las tareas del usuario actual
+    # Filter tasks by status
     tasks_incomplete = Task.objects.filter(user=request.user).exclude(status='Completed')
     tasks_completed = Task.objects.filter(user=request.user, status='Completed')
 
@@ -56,6 +56,7 @@ def tasks(request):
 
 @login_required
 def profile(request):
+    """Not implemented yet"""
     if request.session.get("is_demo", False):
         if not request.session.exists(request.session.session_key):
             request.session.flush()
@@ -131,14 +132,15 @@ def demo_logout(request):
         del request.session["username"]
     return redirect("welcome")
 
-@login_required  # Asegura que solo usuarios autenticados pueden crear tareas
+@login_required  # require the user to be logged in to access this view
 def task_create(request):
-    tags = Tag.objects.all()  # Obtener todos los tags disponibles
+    tags = Tag.objects.all()  # Retrieve all tags
 
     if request.method == "POST":
         task_form = TaskForm(request.POST)
         tag_form = TagForm(request.POST)
 
+        # Check which button was clicked
         if "add_tag" in request.POST:
             if tag_form.is_valid():
                 tag_form.save()
@@ -146,7 +148,9 @@ def task_create(request):
 
         elif "edit_tag" in request.POST:
             tag_id = request.POST.get("tag_id")
+            # Get the tag object from the database
             tag = get_object_or_404(Tag, id=tag_id)
+            # Update the tag name
             tag.name = request.POST.get("new_name")
             tag.save()
             return render(request, "task_form.html", {"task_form": task_form, "tag_form": tag_form, "tags": tags})
@@ -157,11 +161,11 @@ def task_create(request):
             tag.delete()
             return render(request, "task_form.html", {"task_form": task_form, "tag_form": tag_form, "tags": tags})
 
-        else:  # Creación de una nueva tarea
+        else:  # New task form submitted
             if task_form.is_valid():
-                task = task_form.save(commit=False)  # No guardamos aún en la BD
-                task.user = request.user  # Asignamos el usuario actual
-                task.save()  # Ahora sí guardamos en la BD
+                task = task_form.save(commit=False)  # Don't save to the DB yet
+                task.user = request.user  # Asign the current user to the task
+                task.save()  # Now save to the DB
                 return redirect("tasks")
 
     else:
@@ -173,8 +177,8 @@ def task_create(request):
 
 def task_update(request, task_id):
     task = get_object_or_404(Task, id=task_id)
-    tags = Tag.objects.all()  # Obtener todos los tags
-    tag_form = TagForm()  # Formulario para añadir tags
+    tags = Tag.objects.all()
+    tag_form = TagForm()
 
     if request.method == "POST":
         form = TaskForm(request.POST, instance=task)
@@ -187,11 +191,10 @@ def task_update(request, task_id):
     return render(request, 'task_form.html', {
         'task_form': form,
         'tag_form': tag_form,
-        'tags': tags  # Pasar los tags al template
+        'tags': tags  # pass the tags to the template
     })
 
 def task_delete(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     task.delete()
     return redirect('tasks')
-

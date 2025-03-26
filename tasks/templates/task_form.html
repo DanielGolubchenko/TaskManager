@@ -23,14 +23,14 @@
     <details>
         <summary>Tags</summary>
     
-        <!-- Contenido del desplegable -->
+        <!-- Dropdown content -->
         {{ tag_form.as_p }}
         <button type="submit" name="add_tag">Add Tag</button>
 
         <ul>
             {% for tag in tags %}
                 <li>
-                    <!-- Formulario para editar y eliminar dentro del mismo formulario principal -->
+                    <!-- Form to edit and delete within the same main form -->
                     <input type="hidden" name="tag_id" value="{{ tag.id }}">
                     <input type="text" name="new_name" value="{{ tag.name }}">
                     <button type="submit" name="edit_tag">Edit</button>
@@ -40,7 +40,7 @@
         </ul>
     </details>
     <hr>
-    <!-- Botón de guardar tarea (ahora sí está dentro del <form> principal correctamente) -->
+    <!-- Save task button -->
     <button type="submit" name="save_task">Save Task</button>
 </form>
 {% endblock %}
