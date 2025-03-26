@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}new task | TaskManager{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/task_form_style.css' %}">
+<h2 style="color: #ff006c;">Create Task</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {% for field in task_form %}
+        <p>
+            <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+                {% if field.field.required %}<span style="color: #ff006c;">*</span>{% endif %}
+            </label>
+            {{ field }}
+        </p>
+    {% endfor %}
+
+    <details>
+        <summary>Tags</summary>
+    
+        <!-- Contenido del desplegable -->
+        {{ tag_form.as_p }}
+        <button type="submit" name="add_tag">Add Tag</button>
+
+        <ul>
+            {% for tag in tags %}
+                <li>
+                    <!-- Formulario para editar y eliminar dentro del mismo formulario principal -->
+                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                    <input type="text" name="new_name" value="{{ tag.name }}">
+                    <button type="submit" name="edit_tag">Edit</button>
+                    <button type="submit" name="delete_tag">Delete</button>
+                </li>
+            {% endfor %}
+        </ul>
+    </details>
+    <hr>
+    <!-- Botón de guardar tarea (ahora sí está dentro del <form> principal correctamente) -->
+    <button type="submit" name="save_task">Save Task</button>
+</form>
+{% endblock %}

@@ -3,6 +3,19 @@
 {% block title %}Tasks | TaskManager{% endblock %}
 
 {% block content %}
+<style>
+    footer {
+    display: none;
+    }
+</style>
     <h1 align="center">TASKS</h1>
     <hr>
+    {% for task in tasks %}
+    <h2>{{ task.title }} ({{ task.status }})</h2>
+    <p>Priority: {{ task.priority }}</p>
+    <p>Description: {{ task.description }}</p>
+    <p>Due date: {{ task.due_date }}</p>
+    <p><a href="{% url 'task_update' task.id %}">Edit</a> | <a href="{% url 'task_delete' task.id %}">Delete</a></p>
+    {% endfor %}
+    <a href="{% url 'task_create' %}">Create New Task</a>
 {% endblock %}
