@@ -3,43 +3,182 @@
 {% block title %}Tasks | TaskManager{% endblock %}
 
 {% block content %}
+{% load static %}
 <style>
-    footer {
-        display: none;
-    }
+* {
+    box-sizing: border-box;
+}
+
+.tasks-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    width: 100%;
+    gap: 10px;
+    overflow-x: hidden;
+}
+
+.task-column {
+    background-color: #2B2B2B;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0px 0px 10px 2px rgba(255, 255, 255, 0.5);
+    flex: 1;
+    margin: 0 10px;
+    max-width: calc(25% - 20px);
+    display: flex;
+    flex-direction: column;
+}
+
+.task-header {
+    position: relative;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    background-color: #444;
+    margin-bottom: 10px;
+    word-wrap: break-word; /* Para que el texto largo se ajuste dentro del contenedor */
+    overflow-wrap: break-word; /* Para ajustar el texto largo sin desbordar */
+}
+
+.pending { background-color: lightblue; color: black; }
+.in-progress { background-color: #ffcc00e3; color: black; }
+.canceled { background-color: #ff6666; color: black; }
+.completed { background-color: #66cc66; color: black; }
+
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; /* Permite desplazamiento si es necesario */
+    flex-grow: 1; /* Asegura que la lista ocupe el espacio restante */
+}
+
+.task-item {
+    background: white;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    overflow: hidden; 
+    white-space: normal;
+    max-height: 100px; 
+    height: auto;
+}
+
+.task-item .task-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-item .task-actions img {
+    width: 20px;
+    cursor: pointer;
+}
+
+.create-task {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    padding: 10px;
+    background: #ff006c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.create-task:hover {
+    background: #cc0058;
+}
 </style>
 
 <h1 align="center">TASKS</h1>
 <hr>
 
-<!-- Tareas Incompletas -->
-<h2>Incomplete tasks</h2>
-{% for task in tasks_incomplete %}
-    <div style="margin-bottom: 20px;">
-        <strong>{{ task.title }}</strong> ({{ task.status }})
-        <p>Priority: {{ task.priority }}</p>
-        <p>Description: {{ task.description }}</p>
-        <p>Due date: {{ task.due_date }}</p>
-        <p><a href="{% url 'task_update' task.id %}">Edit</a> | <a href="{% url 'task_delete' task.id %}">Delete</a></p>
+<div class="tasks-container">
+    <!-- Pending Tasks -->
+    <div class="task-column">
+        <div class="task-header pending">Pending</div>
+        <ul class="task-list">
+            {% for task in tasks_pending %}
+                <li class="task-item">
+                    {{ task.title }}
+                    <div class="task-actions">
+                        <a href="{% url 'task_update' task_id=task.id %}"><img src="{% static 'images/edit-icon.png' %}" alt="Edit" title="Edit" /></a>
+                        <a href="{% url 'task_delete' task_id=task.id %}"><img src="{% static 'images/delete-icon.png' %}" alt="Delete" title="Delete" /></a>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="task-item">No pending tasks.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'task_create' %}" class="create-task">Create New Task</a>
     </div>
-{% empty %}
-    <p>There are no incomplete tasks.</p>
-{% endfor %}
 
-<!-- Tareas Completadas -->
-<h2>Completed tasks</h2>
-{% for task in tasks_completed %}
-    <div style="margin-bottom: 20px;">
-        <strong>{{ task.title }}</strong> ({{ task.status }})
-        <p>Priority: {{ task.priority }}</p>
-        <p>Description: {{ task.description }}</p>
-        <p>Due date: {{ task.due_date }}</p>
-        <p><a href="{% url 'task_update' task.id %}">Edit</a> | <a href="{% url 'task_delete' task.id %}">Delete</a></p>
+    <!-- In Progress Tasks -->
+    <div class="task-column">
+        <div class="task-header in-progress">In Progress</div>
+        <ul class="task-list">
+            {% for task in tasks_in_progress %}
+                <li class="task-item">
+                    {{ task.title }}
+                    <div class="task-actions">
+                        <a href="{% url 'task_update' task_id=task.id %}"><img src="{% static 'images/edit-icon.png' %}" alt="Edit" title="Edit" /></a>
+                        <a href="{% url 'task_delete' task_id=task.id %}"><img src="{% static 'images/delete-icon.png' %}" alt="Delete" title="Delete" /></a>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="task-item">No tasks in progress.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'task_create' %}" class="create-task">Create New Task</a>
     </div>
-{% empty %}
-    <p>There are no completed tasks.</p>
-{% endfor %}
 
-<hr>
-<a href="{% url 'task_create' %}">Create New Task</a>
+    <!-- Canceled Tasks -->
+    <div class="task-column">
+        <div class="task-header canceled">Canceled</div>
+        <ul class="task-list">
+            {% for task in tasks_canceled %}
+                <li class="task-item">
+                    {{ task.title }}
+                    <div class="task-actions">
+                        <a href="{% url 'task_update' task_id=task.id %}"><img src="{% static 'images/edit-icon.png' %}" alt="Edit" title="Edit" /></a>
+                        <a href="{% url 'task_delete' task_id=task.id %}"><img src="{% static 'images/delete-icon.png' %}" alt="Delete" title="Delete" /></a>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="task-item">No canceled tasks.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'task_create' %}" class="create-task">Create New Task</a>
+    </div>
+
+    <!-- Completed Tasks -->
+    <div class="task-column">
+        <div class="task-header completed">Completed</div>
+        <ul class="task-list">
+            {% for task in tasks_completed %}
+                <li class="task-item">
+                    {{ task.title }}
+                    <div class="task-actions">
+                        <a href="{% url 'task_update' task_id=task.id %}"><img src="{% static 'images/edit-icon.png' %}" alt="Edit" title="Edit" /></a>
+                        <a href="{% url 'task_delete' task_id=task.id %}"><img src="{% static 'images/delete-icon.png' %}" alt="Delete" title="Delete" /></a>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="task-item">No completed tasks.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'task_create' %}" class="create-task">Create New Task</a>
+    </div>
+</div>
 {% endblock %}

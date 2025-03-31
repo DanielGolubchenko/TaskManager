@@ -3,56 +3,154 @@
 {% block title %}Home | TaskManager{% endblock %}
 
 {% block content %}
+{% load static %}
+
 <style>
-    footer {
-        display: none;
-    }
+footer {
+    display: none;
+}   
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #2B2B2B;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.filter-dropdown {
+    width: 100%;
+    padding: 10px;
+    background-color: #444;
+    border: 1px solid #666;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.filter-dropdown:focus {
+    outline: none;
+    border-color: #ff006c;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #2B2B2B;
+    border-radius: 8px;
+    margin-left: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-column {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.task-item {
+    background: white;
+    color: black;
+    padding: 15px;
+    border-radius: 8px;
+    width: calc(33% - 20px);
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.task-item:hover {
+    transform: scale(1.05);
+}
+
+.task-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.create-task {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    padding: 10px;
+    background: #ff006c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.create-task:hover {
+    background: #cc0058;
+}
+.task-actions img {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
 </style>
-    <h1 align="center">HOME</h1>
-    <hr>
+
+<div class="container">
+    <!-- Sidebar (filter section) -->
+    <div class="sidebar">
+        <h3>Filter by Tags</h3>
+        <form method="GET" action="{% url 'home' %}">
+            <!-- Dropdown to select tag -->
+            <select name="tag" class="filter-dropdown">
+                <option value="">-- Select a Tag --</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.name }}" {% if request.GET.tag == tag.name %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="create-task">Apply Filter</button>
+        </form>
+    </div>
+
+    <!-- Main Content (tasks section) -->
+    <div class="task-column">
+        {% for task in tasks %}
+            <div class="task-item">
+                <div class="task-header">{{ task.title }}</div>
+                <p><strong>Priority:</strong> {{ task.priority }}</p>
+                <p><strong>Status:</strong> {{ task.status }}</p>
+                {% if task.description %}
+                    <p><strong>Description:</strong> {{ task.description }}</p>
+                {% endif %}
+                {% if task.due_date %}
+                    <p><strong>Due Date:</strong> {{ task.due_date|date:"F d, Y H:i" }}</p>
+                {% endif %}
+                <p><strong>Tags:</strong> {{ task.tags.all|join:", " }}</p>
     
-    <!-- Completed Tasks -->
-    <h1>Completed Tasks</h1>
-    <ul>
-        {% for task in tasks_completed %}
-            <li>{{ task.title }} - {{ task.status }}</li>
+                <div class="task-actions">
+                    <a href="{% url 'task_update' task.id %}">
+                        <img src="{% static 'images/edit-icon.png' %}" alt="Edit" title="Edit" />
+                    </a>
+                    <a href="{% url 'task_delete' task.id %}">
+                        <img src="{% static 'images/delete-icon.png' %}" alt="Delete" title="Delete" />
+                    </a>
+                </div>
+            </div>
         {% empty %}
-            <li>No completed tasks.</li>
+            <p>No tasks available for the selected filter.</p>
         {% endfor %}
-    </ul>
+    </div>
+</div>
 
-    <!-- Canceled Tasks -->
-    <h1>Canceled Tasks</h1>
-    <ul>
-        {% for task in tasks_canceled %}
-            <li>{{ task.title }} - {{ task.status }}</li>
-        {% empty %}
-            <li>No canceled tasks.</li>
-        {% endfor %}
-    </ul>
-
-    <!-- In Progress Tasks -->
-    <h1>In Progress Tasks</h1>
-    <ul>
-        {% for task in tasks_in_progress %}
-            <li>{{ task.title }} - {{ task.status }}</li>
-        {% empty %}
-            <li>No tasks in progress.</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Pending Tasks -->
-    <h1>Pending Tasks</h1>
-    <ul>
-        {% for task in tasks_pending %}
-            <li>{{ task.title }} - {{ task.status }}</li>
-        {% empty %}
-            <li>No pending tasks.</li>
-        {% endfor %}
-    </ul>
-
-    <hr>
-    <a href="{% url 'welcome' %}" style="text-decoration: none; color: #ff006c;"><span style="color: #ff006c;">﹡</span>WELCOME</a>
-    <hr>
 {% endblock %}
-

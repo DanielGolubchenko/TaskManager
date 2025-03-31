@@ -74,12 +74,6 @@ WSGI_APPLICATION = 'taskmanager.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-import os
-import dj_database_url
-from pathlib import Path
-from dotenv import load_dotenv
-load_dotenv()
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -87,6 +81,7 @@ DATABASES = {
     }
 }
 
+import os
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -127,9 +122,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
 ]
 
 # Default primary key field type
